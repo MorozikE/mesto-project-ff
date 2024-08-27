@@ -11,6 +11,7 @@ const createCard = (card, callBack) => {
 
   cardTitle.textContent = card.name;
   cardImage.src = card.link;
+  cardImage.alt = `Фотография ${card.name}`
 
   deleteBtn.addEventListener('click', callBack);
 
@@ -18,7 +19,8 @@ const createCard = (card, callBack) => {
 };
 // @todo: Функция удаления карточки
 const deleteCard = (evt) => {
-  evt.target.parentElement.remove();
+  const card =  evt.target.closest('.card');
+  card.remove();
 };
 // @todo: Вывести карточки на страницу
 initialCards.forEach((card) => {
