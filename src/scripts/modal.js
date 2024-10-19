@@ -1,3 +1,9 @@
+const escBtnCode = "Escape";
+
+document.querySelectorAll(".popup").forEach((popup) => {
+  popup.classList.add("popup_is-animated");
+});
+
 function openPopUp(popUp, callback) {
   const popUpCloseBtn = popUp.querySelector(".popup__close");
   popUp.classList.add("popup_is-opened");
@@ -9,7 +15,7 @@ function openPopUp(popUp, callback) {
   });
 
   document.addEventListener("keydown", (evt) => {
-    if (evt.keyCode === 27) {
+    if (evt.key === escBtnCode) {
       closePopUp(popUp);
     }
   });
@@ -23,7 +29,7 @@ function openPopUp(popUp, callback) {
 function closePopUp(popUp) {
   popUp.classList.remove("popup_is-opened");
   document.removeEventListener("keydown", (evt) => {
-    if (evt.keyCode === 27) {
+    if (evt.key === escBtnCode) {
       closePopUp(popUp);
     }
   });

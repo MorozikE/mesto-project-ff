@@ -1,11 +1,10 @@
 import "../pages/index.css";
-import "./cards";
+import "./card";
 import "./modal";
-import "./profile";
 
 import { openPopUp, closePopUp } from "./modal";
-import { createCard, likeCard, deleteCard, openImagePopUp } from "./cards";
-import { initialCards } from "./constant";
+import { createCard, likeCard, deleteCard } from "./card";
+import { initialCards } from "./cards";
 
 const userName = document.querySelector(".profile__title");
 const description = document.querySelector(".profile__description");
@@ -16,10 +15,19 @@ const cardList = document.querySelector(".places__list");
 
 const newCardPopUp = document.querySelector(".popup_type_new-card");
 const editCardPopUp = document.querySelector(".popup_type_edit");
+const imagePopUp = document.querySelector(".popup_type_image");
 
-document.querySelectorAll(".popup").forEach((popup) => {
-  popup.classList.add("popup_is-animated");
-});
+const openImagePopUp = (evt) => {
+  openPopUp(imagePopUp, (popUp) => {
+    const image = popUp.querySelector(".popup__image");
+    const description = popUp.querySelector(".popup__caption");
+    const src = evt.target.getAttribute("src");
+    const cardDescription =
+      evt.target.parentNode.querySelector(".card__title").textContent;
+    image.setAttribute("src", src);
+    description.textContent = cardDescription;
+  });
+};
 
 initialCards.forEach((card) => {
   const cardForRender = createCard(card, deleteCard, likeCard, openImagePopUp);
