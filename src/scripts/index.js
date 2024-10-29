@@ -10,7 +10,6 @@ import {
   getCards,
   updateProfile,
   addNewCard,
-  _deleteCard,
   updateAvatar,
 } from "./api";
 
@@ -37,24 +36,24 @@ const configObject = {
   inputErrorClass: "popup__input_type_error",
   errorClass: "popup__error_visible",
 };
-Promise.all([getUserInfo(), getCards()])
-  .then(([userInfo, cards]) => { 
-    userInfo.json().then((json) => {
-      userName.textContent = json.name;
-      description.textContent = json.about;
-      avatar.style = `background-image: url(${json.avatar})`;
-    });
 
-    cards.json().then((cards) => {
-      cards.forEach((card) => {
-        const cardForRender = createCard(
-          card,
-          deleteCard,
-          likeCard,
-          openImagePopUp
-        );
-        cardList.append(cardForRender);
-      });
+let userId;
+Promise.all([getUserInfo(), getCards()])
+  .then(([userInfo, cards]) => {
+    userId = userInfo._id;
+    userName.textContent = userInfo.name;
+    description.textContent = userInfo.about;
+    avatar.style = `background-image: url(${userInfo.avatar})`;
+
+    cards.forEach((card) => {
+      const cardForRender = createCard(
+        userId,
+        card,
+        deleteCard,
+        likeCard,
+        openImagePopUp
+      );
+      cardList.append(cardForRender);
     });
   })
   .catch((err) => console.log(err));
@@ -122,18 +121,17 @@ const editCardFormSubmit = (evt) => {
 const newCardSubmit = (evt) => {
   evt.preventDefault();
   const newCardForm = document.forms["new-place"];
-  let cardForRender;
   newCardForm.button.textContent = "Сохранение...";
 
   addNewCard(newCardForm["place-name"].value, newCardForm.link.value)
     .then((card) => {
-      cardForRender = createCard(card, deleteCard, likeCard, openImagePopUp);
+      let cardForRender = createCard(userId, card, deleteCard, likeCard, openImagePopUp);
+      cardList.prepend(cardForRender);
     })
     .catch((err) => {
       console.log(err);
     })
     .finally(() => {
-      cardList.prepend(cardForRender);
       newCardForm.reset();
       closePopUp(newCardPopUp);
       newCardForm.button.textContent = "Сохранение";

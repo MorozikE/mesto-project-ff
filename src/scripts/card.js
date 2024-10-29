@@ -1,39 +1,34 @@
-import { _deleteCard, _likeCard, deleteLikeFromCard } from "./api";
+import {
+  deleteCard as dCard,
+  likeCard as lCard,
+  deleteLikeFromCard,
+} from "./api";
 
 const cardTemplate = document.querySelector("#card-template").content;
-const myUserId = "28995ef75def413f2b366450";
 const cardLikeClass = "card__like-button_is-active";
 
 const likeCard = (evt) => {
   const card = evt.target.closest(".card");
   const likeCount = card.querySelector(".card__like-count");
-  if (!evt.target.classList.contains(cardLikeClass)) {
-    _likeCard(card.id)
-      .then((json) => {
-        likeCount.textContent = json.likes.length;
-      })
-      .catch((err) => console.log(err))
-      .finally(() => evt.target.classList.add(cardLikeClass));
-  } else {
-    deleteLikeFromCard(card.id)
-      .then((json) => {
-        likeCount.textContent = json.likes.length;
-      })
-      .catch((err) => console.log(err))
-      .finally(() => evt.target.classList.remove(cardLikeClass));
-  }
+
+  const likeMethod = evt.target.classList.contains(cardLikeClass) ? deleteLikeFromCard : lCard;
+  likeMethod(card.id) 
+          .then((res) => {
+             likeCount.textContent = res.likes.length; 
+             evt.target.classList.toggle(cardLikeClass) 
+          })
+  .catch(err => console.log(err));
 };
 
 const deleteCard = (evt) => {
   const card = evt.target.closest(".card");
-  _deleteCard(card.id)
-    .catch((err) => console.log(err))
-    .finally(() => {
-      card.remove();
-    });
+  dCard(card.id)
+    .then(() => card.remove())
+    .catch((err) => console.log(err));
 };
 
 function createCard(
+  myUserId,
   card,
   deleteCardallback,
   likeCardCallback,
@@ -47,13 +42,15 @@ function createCard(
   const likeCount = cloneCard.querySelector(".card__like-count");
 
   const currentUserId = card.owner._id;
-  const isILike = card.likes.some(like => like._id === myUserId);
-  
+  const isILike = card.likes.some((like) => like._id === myUserId);
+
   if (currentUserId != myUserId) {
     deleteBtn.remove();
+  } else {
+    deleteBtn.addEventListener("click", deleteCardallback);
   }
 
-  if (isILike){
+  if (isILike) {
     likeBtn.classList.add(cardLikeClass);
   }
 
@@ -64,7 +61,6 @@ function createCard(
   likeCount.textContent = card.likes.length;
 
   likeBtn.addEventListener("click", likeCardCallback);
-  deleteBtn.addEventListener("click", deleteCardallback);
   cardImage.addEventListener("click", openPopUpCallback);
 
   return cloneCard;
