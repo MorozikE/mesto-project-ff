@@ -9,13 +9,6 @@ const likeCard = (evt) => {
   const likeCount = card.querySelector(".card__like-count");
   if (!evt.target.classList.contains(cardLikeClass)) {
     _likeCard(card.id)
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          return Promise.reject(`Ошибка: ${res.status}`);
-        }
-      })
       .then((json) => {
         likeCount.textContent = json.likes.length;
       })
@@ -23,13 +16,6 @@ const likeCard = (evt) => {
       .finally(() => evt.target.classList.add(cardLikeClass));
   } else {
     deleteLikeFromCard(card.id)
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          return Promise.reject(`Ошибка: ${res.status}`);
-        }
-      })
       .then((json) => {
         likeCount.textContent = json.likes.length;
       })
@@ -59,14 +45,14 @@ function createCard(
   const deleteBtn = cloneCard.querySelector(".card__delete-button");
   const likeBtn = cloneCard.querySelector(".card__like-button");
   const likeCount = cloneCard.querySelector(".card__like-count");
-  const currentUserId = card.owner._id;
 
+  const currentUserId = card.owner._id;
+  const isILike = card.likes.some(like => like._id === myUserId);
+  
   if (currentUserId != myUserId) {
     deleteBtn.remove();
   }
 
-  const isILike = card.likes.some(like => like._id === myUserId);
-  
   if (isILike){
     likeBtn.classList.add(cardLikeClass);
   }
